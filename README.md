@@ -25,6 +25,7 @@ It's for people trying to get into support, sysadmin, or network roles who need 
 - **Host:** Linux with KVM (Intel VT-x or AMD-V enabled). About 10 GB of RAM to spare for v1 and 20 GB for the full lab, plus about 200 GB of free disk.
 - **Software:** QEMU/KVM, libvirt (`virsh`, `virt-install`, `virt-viewer`), `jq`, and an agent that loads `SKILL.md` skills and can dispatch subagents. Written for Claude Code; other skill-aware agents should work but are untested.
 - **Diagram:** Cisco Packet Tracer, free with a Cisco Networking Academy account. It can run on any machine you have.
+  - *Arch Linux:* no native package, but the [`packettracer` AUR package](https://aur.archlinux.org/packages/packettracer) wraps Cisco's Ubuntu `.deb`. Download the `.deb` from your NetAcad account ([lab downloads](https://www.netacad.com/resources/lab-downloads)), put it in the AUR build directory, then build. After installing, run `/usr/lib/packettracer/packettracer.AppImage` once from a terminal to accept the licence and create the desktop entry. [Short video walkthrough](https://www.youtube.com/watch?v=Yz-6MqfDhkU).
 - **Installers:** Ubuntu Server and Desktop, Fedora Workstation, and RHEL (free developer subscription). See [docs/installation-media.md](docs/installation-media.md).
 
 ## Start
