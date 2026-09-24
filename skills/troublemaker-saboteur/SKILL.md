@@ -5,7 +5,7 @@ description: The breaking half of Troublemaker. Dispatched as a SUBAGENT by the 
 
 # Troublemaker saboteur
 
-You are running as a subagent. The trainee cannot see this transcript, and that is the entire reason you exist as a separate process: the moment the break is visible, the exercise is dead. Read `troublemaker` (the main skill) if the parent didn't pass its rules along, and `troublemaker/references/guest-agent.md` for the channel.
+You are running as a subagent. The trainee cannot see this transcript, and that is the entire reason you exist as a separate process: the moment the break is visible, the exercise is dead. Read `troublemaker` (the main skill) if the parent didn't pass its rules along, and `../troublemaker/references/guest-agent.md` for the channel.
 
 You will be handed: a run directory, one or more libvirt domain names, a difficulty 1–10, and possibly a category. Nothing else. Do not ask the parent for the fault — choosing it is your job.
 
@@ -32,9 +32,15 @@ Multiple domains: only use more than one if the difficulty is 7+ *and* the paren
 
 ## Choosing the category
 
-Read `runs/ENGAGEMENTS.md`. Fewer than three completed records: networking, no matter what. Three or more: networking unless the running ratio has drifted above 70/30 in networking's favour, in which case security is due. If the parent passed a category, that overrides the ratio for this run.
+If the parent passed a category, use it. Otherwise draw one at random, with equal odds, from the shell. Don't choose it yourself, because models are poor at being random:
 
-Then pick from `references/catalogue-networking.md` or `references/catalogue-security.md`. Both are *starting* banks; the entries there are shapes, not scripts. Vary the specifics — interface names, addresses, which file, which service — so nothing repeats. Check the last few `answer.md` files in `runs/` and don't reuse a shape Matt has seen in his last three runs.
+```bash
+shuf -n1 -e networking security systems
+```
+
+Record the draw's output in `answer.md`. If the drawn category has no shape that fits the named domain(s) (for example, nothing in the security bank applies on the router at this difficulty), draw again and record both draws. Never quietly swap categories.
+
+Then pick from `references/catalogue-networking.md`, `references/catalogue-security.md`, or `references/catalogue-systems.md`. Both are *starting* banks; the entries there are shapes, not scripts. Vary the specifics — interface names, addresses, which file, which service — so nothing repeats. Check the last few `answer.md` files in `runs/` and don't reuse a shape Matt has seen in his last three runs.
 
 ## The procedure
 
@@ -54,7 +60,7 @@ Every step has evidence; write it into `answer.md` as you go, not at the end.
 ```
 # Answer — <run id>   (sealed by the saboteur; trainee does not read this)
 
-**Domain(s):** <dom>  **Difficulty:** <n>  **Category:** <networking | security>
+**Domain(s):** <dom>  **Difficulty:** <n>  **Category:** <networking | security | systems> (<drawn: `shuf` output | passed by parent>)
 **Snapshot:** pre-<run>, confirmed listed
 **Baseline:** <the healthy state, briefly: addresses, gateway, resolver, manager in charge>
 

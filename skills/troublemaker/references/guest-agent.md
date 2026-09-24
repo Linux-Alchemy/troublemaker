@@ -2,7 +2,7 @@
 
 Everything the saboteur and tutor do on a guest goes through here. No SSH, ever.
 
-## Prerequisites (checked by the lab agent, verified by us at Open)
+## Prerequisites (set up by `troublemaker-lab`, verified by us at Open)
 
 - In the guest: `qemu-guest-agent` installed and enabled (`systemctl is-active qemu-guest-agent`).
 - On the domain: a virtio-serial channel named `org.qemu.guest_agent.0`. virt-manager adds it by default; check with
@@ -10,7 +10,7 @@ Everything the saboteur and tutor do on a guest goes through here. No SSH, ever.
 
 ## Connection
 
-Run on Shadowvault, always as `virsh -c qemu:///system` — the `reaper` user is in the `libvirt` group, so no sudo. Plain `virsh` connects to the per-user session, which is empty; that is the first thing to suspect when a domain "doesn't exist". From Legion, `tailscale ssh shadowvault` and work there; SV runs no `sshd`, so `qemu+ssh://` URIs fail. Below, `$V` is `virsh -c qemu:///system`.
+Run on the host, always as `virsh -c qemu:///system`. The user is in the `libvirt` group, so no sudo. Plain `virsh` connects to the per-user session, which is empty; that is the first thing to suspect when a domain "doesn't exist". From another machine, `tailscale ssh shadowvault` and work there; `qemu+ssh://` remote URIs are untested. Below, `$V` is `virsh -c qemu:///system`.
 
 ## The three calls that matter
 
@@ -50,7 +50,7 @@ gx tm-01 'ip -br addr'
 gx tm-01 'systemctl is-active systemd-resolved' || echo "resolver is down"
 ```
 
-Stdout is the guest command's stdout, stderr its stderr, exit code its exit code. Put it on `PATH` or alias it at the start of a session. Needs `jq`, which SV has.
+Stdout is the guest command's stdout, stderr its stderr, exit code its exit code. Put it on `PATH` or alias it at the start of a session. Needs `jq`.
 
 This is the one deliberate exception to the repo's "no scripts until done by hand three times" rule: that rule is about workflow steps whose repeatable shape isn't known yet, and `gx` is the transport the standard depends on — its shape is the guest-agent protocol, which is fixed. A script the saboteur is *told to use* is also a stronger guarantee of "never SSH" than a function it is told to paste.
 

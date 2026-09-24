@@ -1,8 +1,8 @@
 # Run: <run id>
 
 - **Opened:** <date>  **Closed:** <date>  **Result:** <solved | solved-with-hints | unsolved>
-- **Domain(s):** <libvirt domain names on SV>
-- **Difficulty:** <1–10>  **Category:** <networking | security | (chosen by saboteur)>
+- **Domain(s):** <libvirt domain names>
+- **Difficulty:** <1–10>  **Category:** <networking | security | systems> (drawn at random unless Matt named one)
 - **Snapshot:** pre-<run>  **Reverted:** <date, by Matt>
 - **Files:** answer.md (sealed) · ticket.md · report.md
 

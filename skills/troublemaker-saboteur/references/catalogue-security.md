@@ -1,6 +1,6 @@
 # Security / permissions fault catalogue — starter bank
 
-**Reviewed 2026-09-16, all kept; expected to evolve.** Staged in after three networking engagements (see main skill). Same conventions as the networking bank.
+**Reviewed 2026-09-16, all kept; expected to evolve.** One of three equally weighted categories, drawn at random each run (see main skill). Same conventions as the networking bank.
 
 | # | Shape | What a human did | Symptom the user reports | Depth | Undo shape |
 |---|---|---|---|---|---|

@@ -27,16 +27,16 @@ Two rules shape everything else. **The tutor holds the answer and never hands it
 
 | Thing | Fact |
 |---|---|
-| VM host | **Shadowvault** (SV), Tailscale `shadowvault` / `100.108.19.5`. QEMU/KVM via libvirt. |
-| Where the session runs | **On SV**, where the skills live. Every `virsh` call is `virsh -c qemu:///system …` — plain `virsh` there talks to the empty user session and shows nothing. From Legion (`100.82.229.18`), reach SV with `tailscale ssh shadowvault` first; SV runs no `sshd`, so `qemu+ssh://` URIs do not work. |
-| Targets | libvirt domains on SV, **one NIC each** — end users don't run management NICs, and the lab shouldn't either. A handful of Linux guests: some on a small lab network, one or two standalone. Matt names the **domain(s)** when he opens an engagement. The lab itself is built by a different agent; Troublemaker never creates or reconfigures VMs. Existing non-targets on SV (`BlackArch`, and anything else not named) are never touched. |
+| VM host | One Linux host running QEMU/KVM via libvirt. **Its specifics (addresses, pools, access path, non-lab VMs and networks) live in `local/host.md`. Read it first.** If it's missing, stop and point to `docs/getting-started.md`. |
+| Where the session runs | **On the host**, where the skills are installed. Every `virsh` call is `virsh -c qemu:///system …`; plain `virsh` talks to the per-user session and shows nothing. |
+| Targets | `tm-*` libvirt domains, **one NIC each** (end users don't run management NICs, and the lab shouldn't either). The exception is `tm-router`, which has WAN and LAN NICs because routing is its job. The lab is a small office behind that router; the design is in `docs/lab-design.md`. It's built in stages (pre-v1 design; v1 router + one server + one workstation; v2 a second server and workstation; v3, optional, a physical laptop over the office VPN), and **only targets already handed over for the current stage are valid.** Matt names the **domain(s)** when he opens an engagement. `troublemaker-lab` builds the lab in separate sessions; the engagement roles (saboteur, tutor) never create or reconfigure VMs or networks. The v3 laptop has no guest agent. Its out-of-band channel is SSH over a path outside the lab (`troublemaker-lab/references/remote-worker-vpn.md`), and it isn't a valid target until that channel is tested. Every VM and network listed as non-lab in `local/host.md` is never touched. |
 | Guest access, agent side | **QEMU guest agent only.** `qemu-guest-agent` inside the guest, `org.qemu.guest_agent.0` channel on the domain. `scripts/gx.sh <dom> '<cmd>'` is how commands run; `references/guest-agent.md` explains the channel. The agent never SSHes to a target. |
-| Guest access, trainee side | Matt's choice: SSH over the lab network, `virsh console`, or remote-viewer. That's his crash cart; the tutor may remind him it exists. |
-| Host libvirt facts | Pools: `default` (`/var/lib/libvirt/images`), `iso-files` (`/home/reaper/matrix/iso-files`). Network `default` is NAT on `virbr0`, `192.168.122.0/24`; the lab network is whatever the lab agent adds. `jq` is installed. virt-manager adds the `org.qemu.guest_agent.0` channel to new domains by default (confirmed 2026-09-16). |
-| Snapshots | libvirt snapshots per domain. `clean` after the lab agent hands the guest over. `pre-<run>` taken by the saboteur before it breaks anything. Reset is `virsh snapshot-revert <dom> pre-<run>`, by hand, until it has been done three times. |
-| Repo | `~/github/troublemaker`. Skills in `skills/`, runs in `runs/`. |
+| Guest access, trainee side | Matt's choice: SSH over the lab network, `virsh console`, or `virt-viewer`. That's his crash cart; the tutor may remind him it exists. |
+| Host libvirt facts | Lab disks in pool `lab-vms`, ISOs in pool `iso-files` (paths in `local/host.md`). Lab networks are `tm-*`; the `default` network isn't part of the lab. `jq` is required by `gx.sh`. The builder adds the `org.qemu.guest_agent.0` channel explicitly to every lab VM. |
+| Snapshots | libvirt snapshots per domain. `clean` after `troublemaker-lab` hands the guest over. `pre-<run>` taken by the saboteur before it breaks anything. Reset is `virsh snapshot-revert <dom> pre-<run>`, by hand, until it has been done three times. |
+| Repo | This repository. Skills in `skills/`, runs in `runs/`, host specifics in `local/`. |
 
-**Host rule.** Nothing changes on SV except the named target domain, and only via the guest agent and domain-scoped `virsh` (snapshots, `qemu-agent-command`). No host networking, no host packages, no other domains, no `virsh destroy`.
+**Host rule.** Nothing changes on the host except the named target domain, and only via the guest agent and domain-scoped `virsh` (snapshots, `qemu-agent-command`). No host networking, no host packages, no other domains, no `virsh destroy`.
 
 ## The out-of-band standard
 
@@ -61,13 +61,13 @@ Run one is pinned at 2–3: it is testing the loop, not the saboteur's imaginati
 
 ## Categories and the engagement record
 
-**Networking first** — it lines up with the CCNA. **Permissions and security-shaped faults** are staged in: once `runs/ENGAGEMENTS.md` holds three completed records, the saboteur may choose them, aiming for roughly 70/30 networking/security over time. Nothing about the VMs changes for that; it is purely the saboteur's choice, read from the record. The record is also how Matt sees what he has and hasn't practised.
+Three categories, with equal weight: **networking** (lines up with the CCNA), **security** (permissions and access), and **systems** (services, storage, packages, scheduling: the everyday support ticket). The saboteur picks one **at random for each run**, using a real random draw, not its own judgement, so Matt can't predict it and no category gets favoured. Matt can name a category when he opens a run, and that overrides the draw. The category stays sealed with the answer; the ticket never names it. Decided 2026-09-24; this replaces the earlier networking-first 70/30 staging. `runs/ENGAGEMENTS.md` is how Matt sees what he has and hasn't practised.
 
 ## The loop
 
 Load the named skill at each step. Each step's evidence is what the next one stands on.
 
-1. **Open.** Matt names the target domain(s) and a difficulty, optionally a category. Create `runs/<YYYY-MM-DD>-<domain>-<nn>/` from `runs/TEMPLATE.md`. Check `guest-ping` answers on every named domain and that the `pre-<run>` snapshot can be taken. If either fails, stop; the lab isn't ready and that is the lab agent's problem, not ours.
+1. **Open.** Matt names the target domain(s) and a difficulty, optionally a category. Create `runs/<YYYY-MM-DD>-<domain>-<nn>/` from `runs/TEMPLATE.md`. Check `guest-ping` answers on every named domain and that the `pre-<run>` snapshot can be taken. If either fails, stop; the lab isn't ready and that goes back to a `troublemaker-lab` build session, not this one.
 2. **Break** → dispatch `troublemaker-saboteur` as a subagent with the run directory, domain(s), difficulty, and category. Wait for "sealed". The subagent's final message carries the answer to the parent; **do not `cat answer.md` in the parent session** unless context has been lost — the file is the durable copy, the return message is the working one. Matt could expand a tool result; he can't expand a subagent's report.
 3. **Ticket** → `troublemaker-ticket`. Write `ticket.md` from the answer. Symptom, user-language, at the precision the difficulty dial says. Never the cause, never the file, never the command.
 4. **Investigate** → `troublemaker-tutor`. Matt works the guest from the shell. The tutor coaches: questions, not answers; commands and log-reading on request; the fault never. When Matt says "found it", the tutor confirms or asks what evidence he has. When he says "fixed", the tutor checks from the outside via the guest agent and says what it saw.

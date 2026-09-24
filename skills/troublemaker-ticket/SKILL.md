@@ -1,6 +1,6 @@
 ---
 name: troublemaker-ticket
-description: Placeholder. The ticket-writing step of Troublemaker — turns the saboteur's sealed answer into the kind of support ticket a help-desk tech would actually receive: symptom in the reporter's words, at the precision the difficulty dial sets, never the cause. Not yet written; it will be built from the common shape of real ticketing platforms (Jira SM, Zendesk, Freshdesk, ServiceNow and the like) without copying any one of them. Until then, when an engagement reaches the Ticket step, use the interim shape in this file.
+description: 'Placeholder. The ticket-writing step of Troublemaker — turns the saboteur''s sealed answer into the kind of support ticket a help-desk tech would actually receive: symptom in the reporter''s words, at the precision the difficulty dial sets, never the cause. Not yet written; it will be built from the common shape of real ticketing platforms (Jira SM, Zendesk, Freshdesk, ServiceNow and the like) without copying any one of them. Until then, when an engagement reaches the Ticket step, use the interim shape in this file.'
 ---
 
 # Troublemaker ticket (placeholder)
